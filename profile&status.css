@@ -120,3 +120,46 @@ footer{
     width: 100%;
     box-shadow: 0 -2px 4px rgb(223, 33, 33);
 }
+
+@media (max-width: 900px) {
+    main, form, .profile-status {
+        max-width: 95%;
+        margin: 15px auto;
+        font-size: 1em;
+    }
+    h1 {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 600px) {
+    header, footer {
+        padding: 12px;
+    }
+    main, form, .profile-status {
+        max-width: 100%;
+        margin: 10px 0;
+        padding: 12px;
+        font-size: 0.95em;
+    }
+    h1 {
+        font-size: 1.3em;
+    }
+    button, .Homepage a {
+        width: 100%;
+        padding: 12px 0;
+        font-size: 1em;
+        margin-top: 8px;
+        text-align: center;
+    }
+    form label, #requirements {
+        font-size: 1em;
+    }
+    .Homepage {
+        display: flex;
+        justify-content: center;
+    }
+    .Homepage a:last-child {
+        text-align: center;
+    }
+}

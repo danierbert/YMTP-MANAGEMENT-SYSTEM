@@ -78,3 +78,49 @@ footer{
     width: 100%;
     box-shadow: 0 -2px 4px rgb(223, 33, 33);
 }
+
+@media (max-width: 900px) {
+    main,
+    .contact-container {
+        max-width: 95%;
+        padding: 15px;
+    }
+    nav {
+        flex-direction: column;
+        align-items: center;
+    }
+    nav a {
+        margin: 8px 0;
+        width: 90%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    header, footer {
+        padding: 12px;
+    }
+    h1 {
+        font-size: 1.5em;
+    }
+    main,
+    .contact-container {
+        font-size: 1em;
+        padding: 10px;
+        margin: 10px auto;
+    }
+    nav {
+        font-size: 1em;
+    }
+    nav a {
+        font-size: 1em;
+        padding: 8px 0;
+    }
+    footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 100;
+    }
+}
