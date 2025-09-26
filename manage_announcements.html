@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Announcements - YMTP</title>
+  <style>
+    :root {
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --dark-bg: #2c3e50;
+      --light-bg: #f4f4f4;
+      --text-dark: #333;
+      --text-light: #f4f4f4;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    header {
+      background: var(--red);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-title img {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    nav a, nav button {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav button:hover {
+      color: var(--yellow);
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .bar {
+      height: 3px;
+      width: 25px;
+      background-color: white;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: var(--red);
+        flex-direction: column;
+        width: 200px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .welcome-panel {
+      background: var(--yellow);
+      color: var(--dark-bg);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .card {
+      background: #34495e;
+      color: var(--text-light);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background: var(--red);
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button:hover {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    .announcement-list {
+      margin-top: 20px;
+    }
+
+    .announcement-item {
+      background: var(--yellow);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .announcement-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    footer {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-title">
+      <img src="../pictures/ymtp_logo.jpg" alt="YMTP Logo" class="logo">
+      <h3>Manage Announcements</h3>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="president.html">Home</a>
+      <a href="offprof.html">Profile</a>
+      <button id="darkModeToggle">🌙 Dark Mode</button>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="welcome-panel">
+      📢 Post and Manage YMTP Announcements
+    </div>
+
+    <div class="card">
+      <h2>📝 Create New Announcement</h2>
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" placeholder="Enter announcement title">
+      </div>
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea id="content" rows="4" placeholder="Enter announcement details"></textarea>
+      </div>
+      <button onclick="addAnnouncement()">Post Announcement</button>
+    </div>
+
+    <div class="card">
+      <h2>📋 Announcement List</h2>
+      <div id="announcement-list" class="announcement-list">
+        <p>No announcements yet.</p>
+      </div>
+    </div>
+
+          <button class="btn" onclick="window.location.href='president.html'">⬅ Back to Home</button>
+
+  </main>
+
+  <footer>
+    © 2025 YMTP Management System. All rights reserved.
+  </footer>
+
+  <script>
+    // Dark Mode Toggle
+    const toggleBtn = document.getElementById("darkModeToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    // Mobile Menu
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+    // Load announcements from localStorage
+    let announcements = JSON.parse(localStorage.getItem("announcements")) || [];
+    renderAnnouncements();
+
+    function addAnnouncement() {
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      if (title && content) {
+        const newAnnouncement = { id: Date.now(), title, content };
+        announcements.unshift(newAnnouncement);
+        saveAnnouncements();
+        renderAnnouncements();
+
+        document.getElementById("title").value = "";
+        document.getElementById("content").value = "";
+      } else {
+        alert("Please fill in both fields.");
+      }
+    }
+
+    function renderAnnouncements() {
+      const list = document.getElementById("announcement-list");
+      list.innerHTML = "";
+
+      if (announcements.length === 0) {
+        list.innerHTML = "<p>No announcements yet.</p>";
+        return;
+      }
+
+      announcements.forEach((a) => {
+        const item = document.createElement("div");
+        item.className = "announcement-item";
+        item.innerHTML = `
+          <h3>${a.title}</h3>
+          <p>${a.content}</p>
+          <div class="announcement-actions">
+            <button onclick="editAnnouncement(${a.id})">✏️ Edit</button>
+            <button onclick="deleteAnnouncement(${a.id})">🗑️ Delete</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function editAnnouncement(id) {
+      const a = announcements.find((a) => a.id === id);
+      if (a) {
+        const newTitle = prompt("Edit Title:", a.title);
+        const newContent = prompt("Edit Content:", a.content);
+        if (newTitle && newContent) {
+          a.title = newTitle;
+          a.content = newContent;
+          saveAnnouncements();
+          renderAnnouncements();
+        }
+      }
+    }
+
+    function deleteAnnouncement(id) {
+      if (confirm("Are you sure you want to delete this announcement?")) {
+        announcements = announcements.filter((a) => a.id !== id);
+        saveAnnouncements();
+        renderAnnouncements();
+      }
+    }
+
+    function saveAnnouncements() {
+      localStorage.setItem("announcements", JSON.stringify(announcements));
+    }
+  </script>
+</body>
+</html>

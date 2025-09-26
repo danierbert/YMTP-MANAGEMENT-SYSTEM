@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOD - Approve Proposals</title>
+  <style>
+    :root {
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --dark-bg: #2c3e50;
+      --light-bg: #f4f4f4;
+      --text-dark: #333;
+      --text-light: #f4f4f4;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    header {
+      background: var(--red);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-title img {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    nav a, nav button {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav button:hover {
+      color: var(--yellow);
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .bar {
+      height: 3px;
+      width: 25px;
+      background-color: white;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: var(--red);
+        flex-direction: column;
+        width: 200px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    main { padding: 20px; }
+
+    .welcome-panel {
+      background: var(--yellow);
+      color: var(--dark-bg);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .card {
+      background: #34495e;
+      color: var(--text-light);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    table th {
+      background: var(--yellow);
+      font-weight: bold;
+    }
+
+    body.dark-mode table th {
+      background: #f39c12;
+    }
+
+    .table-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+      margin: 2px;
+    }
+
+    .btn-approve { background: #2ecc71; }
+    .btn-decline { background: #e74c3c; }
+
+    .back-btn {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    footer {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-title">
+      <img src="ymtp_logo.jpg" alt="YMTP Logo" class="logo">
+      <h3>YMTP Management System</h3>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="bodmain.html">Home</a>
+      <a href="bodprof.html">Profile</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <button id="darkModeToggle">🌙 Dark Mode</button>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="welcome-panel">
+      📑 Review and Approve Proposals Submitted by Members
+    </div>
+
+    <div class="card">
+      <h2>Proposals Pending Approval</h2>
+      <div class="table-container">
+        <table id="proposalTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Submitted By</th>
+              <th>Date Submitted</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Community Clean-Up</td>
+              <td>Juan Dela Cruz</td>
+              <td>2025-09-26</td>
+              <td>Operations</td>
+              <td>Pending</td>
+              <td>
+                <button class="btn btn-approve" onclick="updateStatus(this, 'Approved')">Approve</button>
+                <button class="btn btn-decline" onclick="updateStatus(this, 'Declined')">Decline</button>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Fundraising Event</td>
+              <td>Maria Santos</td>
+              <td>2025-09-25</td>
+              <td>Finance</td>
+              <td>Pending</td>
+              <td>
+                <button class="btn btn-approve" onclick="updateStatus(this, 'Approved')">Approve</button>
+                <button class="btn btn-decline" onclick="updateStatus(this, 'Declined')">Decline</button>
+              </td>
+            </tr>
+            <!-- Add more proposals as needed -->
+          </tbody>
+        </table>
+      </div>
+      <button class="back-btn" onclick="window.location.href='bodmain.html'">⬅ Back</button>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 YMTP Management System. All rights reserved.
+  </footer>
+
+  <script>
+    // Dark Mode
+    const toggleBtn = document.getElementById("darkModeToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    // Mobile Menu
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+    // Approve/Decline Function
+    function updateStatus(btn, status) {
+      const row = btn.parentElement.parentElement;
+      row.cells[5].textContent = status;
+    }
+  </script>
+</body>
+</html>

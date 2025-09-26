@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YMTP Budget Oversight</title>
+  <style>
+    :root {
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --dark-bg: #2c3e50;
+      --light-bg: #f4f4f4;
+      --text-dark: #333;
+      --text-light: #f4f4f4;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    header {
+      background: var(--red);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-title img {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    nav a, nav button {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav button:hover {
+      color: var(--yellow);
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .bar {
+      height: 3px;
+      width: 25px;
+      background-color: white;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: var(--red);
+        flex-direction: column;
+        width: 200px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .card {
+      background: #34495e;
+      color: var(--text-light);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .budget-summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .summary-item {
+      flex: 1;
+      background: var(--yellow);
+      color: var(--dark-bg);
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      min-width: 100px;
+    }
+
+    .transaction-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .transaction-form input,
+    .transaction-form select,
+    .transaction-form button {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .transaction-form button {
+      background: var(--red);
+      color: white;
+      border: none;
+      cursor: pointer;
+      flex: 0.5;
+    }
+
+    .transaction-form button:hover {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    body.dark-mode th {
+      background: #f39c12;
+      color: black;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: var(--red);
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    footer {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-title">
+      <img src="../pictures/ymtp_logo.jpg" alt="YMTP Logo">
+      <h3>YMTP Budget Oversight</h3>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="president.html">Home</a>
+      <button id="darkModeToggle">🌙 Dark Mode</button>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Budget Summary -->
+    <div class="card">
+      <h2>💰 Budget Summary</h2>
+      <div class="budget-summary">
+        <div class="summary-item">
+          <h3>Total Funds</h3>
+          <p id="totalFunds">₱0</p>
+        </div>
+        <div class="summary-item">
+          <h3>Total Expenses</h3>
+          <p id="totalExpenses">₱0</p>
+        </div>
+        <div class="summary-item">
+          <h3>Balance</h3>
+          <p id="balance">₱0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Transaction -->
+    <div class="card">
+      <h2>➕ Add Transaction</h2>
+      <form id="transactionForm" class="transaction-form">
+        <input type="text" id="description" placeholder="Description" required>
+        <input type="number" id="amount" placeholder="Amount" required>
+        <select id="type">
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+        <button type="submit">Add</button>
+      </form>
+    </div>
+
+    <!-- Transaction Records -->
+    <div class="card">
+      <h2>📊 Transaction Records</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="transactionTable">
+          <!-- Records go here -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Back Button -->
+    <a href="president.html" class="back-btn">⬅ Back to Dashboard</a>
+  </main>
+
+  <footer>
+    © 2025 YMTP Management System. All rights reserved.
+  </footer>
+
+  <script>
+    // Dark Mode Toggle
+    const toggleBtn = document.getElementById("darkModeToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode") 
+        ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    // Mobile Menu
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+    // Budget Oversight Logic
+    let totalFunds = 0;
+    let totalExpenses = 0;
+
+    const totalFundsEl = document.getElementById("totalFunds");
+    const totalExpensesEl = document.getElementById("totalExpenses");
+    const balanceEl = document.getElementById("balance");
+    const transactionForm = document.getElementById("transactionForm");
+    const transactionTable = document.getElementById("transactionTable");
+
+    transactionForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const description = document.getElementById("description").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const type = document.getElementById("type").value;
+      const date = new Date().toLocaleDateString();
+
+      if (type === "income") {
+        totalFunds += amount;
+      } else {
+        totalExpenses += amount;
+      }
+
+      const balance = totalFunds - totalExpenses;
+
+      // Update UI
+      totalFundsEl.textContent = "₱" + totalFunds.toLocaleString();
+      totalExpensesEl.textContent = "₱" + totalExpenses.toLocaleString();
+      balanceEl.textContent = "₱" + balance.toLocaleString();
+
+      // Add row to table
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${description}</td>
+        <td>${type.charAt(0).toUpperCase() + type.slice(1)}</td>
+        <td>₱${amount.toLocaleString()}</td>
+        <td>${date}</td>
+      `;
+      transactionTable.appendChild(row);
+
+      // Reset form
+      transactionForm.reset();
+    });
+  </script>
+</body>
+</html>

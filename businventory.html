@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Oversight - YMTP</title>
+  <style>
+    :root {
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --dark-bg: #2c3e50;
+      --light-bg: #f4f4f4;
+      --text-dark: #333;
+      --text-light: #f4f4f4;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode { background: var(--dark-bg); color: var(--text-light); }
+    header {
+      background: var(--red);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo-title { display: flex; align-items: center; gap: 10px; }
+    .logo-title img { height: 50px; width: 50px; border-radius: 50%; }
+    nav { display: flex; align-items: center; gap: 15px; }
+    nav a, nav button { color: white; text-decoration: none; font-weight: bold; background: none; border: none; cursor: pointer; }
+    nav a:hover, nav button:hover { color: var(--yellow); }
+    .menu-toggle { display: none; flex-direction: column; cursor: pointer; }
+    .bar { height: 3px; width: 25px; background-color: white; margin: 4px 0; border-radius: 2px; }
+    .nav-links { display: flex; gap: 15px; }
+    @media (max-width: 768px) {
+      .nav-links { display: none; position: absolute; top: 60px; right: 20px; background: var(--red); flex-direction: column; width: 200px; padding: 15px; border-radius: 10px; }
+      .nav-links.active { display: flex; }
+      .menu-toggle { display: flex; }
+    }
+    main { flex: 1; padding: 20px; }
+    .welcome-panel { background: var(--yellow); color: var(--dark-bg); padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; }
+    .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s; }
+    body.dark-mode .card { background: #34495e; color: var(--text-light); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 14px; }
+    th { background: var(--red); color: white; }
+    .table-container { overflow-x: auto; max-width: 100%; }
+    .btn { background: var(--yellow); border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; border-radius: 5px; margin-right: 5px; transition: 0.3s; }
+    .btn:hover { background: var(--red); color: white; }
+    footer { background: var(--red); color: white; text-align: center; padding: 10px; }
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+    .modal-content { background-color: #f4f4f4; margin: 10% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; color: var(--text-dark); }
+    .modal-content input, .modal-content select { width: 100%; padding: 8px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; }
+    .modal-header { font-weight: bold; margin-bottom: 10px; }
+    .modal-footer { text-align: right; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-title">
+      <img src="ymtp_logo.jpg" alt="YMTP Logo">
+      <h3>Inventory Oversight</h3>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="busmain.html">Home</a>
+      <a href="busprof.html">Profile</a>
+      <button id="darkModeToggle">🌙 Dark Mode</button>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="welcome-panel">👋 Inventory Management</div>
+
+    <div class="card">
+      <button class="btn" id="addItemBtn">➕ Add Item</button>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date Added</th>
+              <th>Item Name</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>Unit Price (₱)</th>
+              <th>Total Value (₱)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody">
+            <tr>
+              <td>2025-09-26</td>
+              <td>Printer Ink</td>
+              <td>Office Supplies</td>
+              <td>10</td>
+              <td>₱500</td>
+              <td>₱5000</td>
+              <td><button class="btn" onclick="removeItem(this)">Remove</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="itemModal">
+      <div class="modal-content">
+        <div class="modal-header">Add Inventory Item</div>
+        <div class="modal-body">
+          <input type="date" id="itemDate">
+          <input type="text" id="itemName" placeholder="Item Name">
+          <input type="text" id="itemCategory" placeholder="Category">
+          <input type="number" id="itemQty" placeholder="Quantity">
+          <input type="number" id="itemPrice" placeholder="Unit Price">
+        </div>
+        <div class="modal-footer">
+          <button class="btn" id="saveItemBtn">Save</button>
+          <button class="btn" id="closeItemModalBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="window.history.back()" style="margin-top:10px;">⬅ Back</button>
+  </main>
+
+  <footer>© 2025 YMTP Management System. All rights reserved.</footer>
+
+  <script>
+    // Dark Mode
+    const toggleBtn = document.getElementById("darkModeToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    // Mobile Menu
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    menuToggle.addEventListener("click", () => { navLinks.classList.toggle("active"); });
+
+    // Inventory Modal
+    const modal = document.getElementById("itemModal");
+    const addItemBtn = document.getElementById("addItemBtn");
+    const closeItemModalBtn = document.getElementById("closeItemModalBtn");
+    const saveItemBtn = document.getElementById("saveItemBtn");
+
+    addItemBtn.onclick = () => { modal.style.display = "block"; }
+    closeItemModalBtn.onclick = () => { modal.style.display = "none"; }
+
+    saveItemBtn.onclick = () => {
+      const date = document.getElementById("itemDate").value;
+      const name = document.getElementById("itemName").value;
+      const category = document.getElementById("itemCategory").value;
+      const qty = document.getElementById("itemQty").value;
+      const price = document.getElementById("itemPrice").value;
+
+      if(date && name && category && qty && price){
+        const tbody = document.getElementById("inventoryTableBody");
+        const total = qty * price;
+        const newRow = tbody.insertRow();
+        newRow.innerHTML = `
+          <td>${date}</td>
+          <td>${name}</td>
+          <td>${category}</td>
+          <td>${qty}</td>
+          <td>₱${price}</td>
+          <td>₱${total}</td>
+          <td><button class="btn" onclick="removeItem(this)">Remove</button></td>
+        `;
+        modal.style.display = "none";
+        document.getElementById("itemDate").value = '';
+        document.getElementById("itemName").value = '';
+        document.getElementById("itemCategory").value = '';
+        document.getElementById("itemQty").value = '';
+        document.getElementById("itemPrice").value = '';
+      } else { alert("Please fill all fields!"); }
+    }
+
+    window.onclick = function(event) { if(event.target == modal) modal.style.display = "none"; }
+
+    function removeItem(btn) {
+      const row = btn.closest("tr");
+      row.remove();
+    }
+  </script>
+</body>
+</html>

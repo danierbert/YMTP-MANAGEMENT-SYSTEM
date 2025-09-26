@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Report - Treasurer</title>
+<style>
+:root {
+  --red: #e74c3c;
+  --yellow: #f1c40f;
+  --dark-bg: #2c3e50;
+  --light-bg: #f4f4f4;
+  --text-dark: #333;
+  --text-light: #f4f4f4;
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--light-bg);
+  color: var(--text-dark);
+  transition: background 0.3s, color 0.3s;
+}
+body.dark-mode { background: var(--dark-bg); color: var(--text-light); }
+header {
+  background: var(--red);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.logo-title { display: flex; align-items: center; gap: 10px; }
+.logo-title img { height: 60px; width: 60px; border-radius: 50%; }
+nav { display: flex; align-items: center; gap: 15px; }
+nav a, nav button { color: white; text-decoration: none; font-weight: bold; background: none; border: none; cursor: pointer; }
+nav a:hover, nav button:hover { color: var(--yellow); }
+.menu-toggle { display: none; flex-direction: column; cursor: pointer; }
+.bar { height: 3px; width: 25px; background-color: white; margin: 4px 0; border-radius: 2px; }
+.nav-links { display: flex; gap: 15px; }
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: var(--red);
+    flex-direction: column;
+    width: 200px;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .nav-links.active { display: flex; }
+  .menu-toggle { display: flex; }
+}
+main { padding: 20px; }
+.welcome-panel {
+  background: var(--yellow);
+  color: var(--dark-bg);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background 0.3s, color 0.3s;
+}
+body.dark-mode .card { background: #34495e; color: var(--text-light); }
+.summary { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+.summary-item { flex: 1; background: var(--yellow); color: var(--dark-bg); text-align: center; padding: 15px; border-radius: 10px; font-weight: bold; min-width: 100px; }
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+th { background: var(--red); color: white; }
+.back-btn { margin-top: 15px; padding: 10px 20px; background: var(--red); color: white; border: none; border-radius: 5px; cursor: pointer; }
+.back-btn:hover { background: var(--yellow); color: var(--dark-bg); }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-title">
+    <img src="ymtp_logo.jpg" alt="YMTP Logo">
+    <h3>YMTP Treasurer - Financial Report</h3>
+  </div>
+  <div class="menu-toggle" id="menuToggle">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="treasmain.html">Home</a>
+    <a href="treasprof.html">Profile</a>
+    <button id="darkModeToggle">🌙 Dark Mode</button>
+    <a href="login.html">Logout</a>
+  </nav>
+</header>
+
+<main>
+<div class="welcome-panel">📊 Financial Report - Treasurer Overview</div>
+
+<!-- Summary -->
+<div class="card">
+<div class="summary">
+  <div class="summary-item">Total Income: ₱<span id="totalIncome">0</span></div>
+  <div class="summary-item">Total Expenses: ₱<span id="totalExpenses">0</span></div>
+  <div class="summary-item">Balance: ₱<span id="balance">0</span></div>
+</div>
+</div>
+
+<!-- Filters -->
+<div class="card">
+<h2>Filters</h2>
+<label>Date From: <input type="date" id="fromDate"></label>
+<label>To: <input type="date" id="toDate"></label>
+<label>Category: 
+<select id="categoryFilter">
+  <option value="all">All</option>
+</select>
+</label>
+</div>
+
+<!-- Chart -->
+<div class="card">
+<h2>📈 Income vs Expenses Chart</h2>
+<canvas id="financeChart" style="width:100%; max-height:400px;"></canvas>
+</div>
+
+<!-- Table -->
+<div class="card">
+<h2>💰 Transactions Records</h2>
+<div class="table-container">
+<table id="financeTable">
+<thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<button class="back-btn" onclick="history.back()">⬅️ Back</button>
+</div>
+
+</main>
+<footer>© 2025 YMTP Management System. All rights reserved.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Sample Data
+const transactions = [
+  { date: '2025-09-01', type:'Income', category:'Donation', amount:5000 },
+  { date: '2025-09-02', type:'Income', category:'Membership Fee', amount:3000 },
+  { date: '2025-09-03', type:'Expense', category:'Supplies', amount:2000 },
+  { date: '2025-09-03', type:'Income', category:'Donation', amount:2500 },
+  { date: '2025-09-04', type:'Expense', category:'Transport', amount:1000 }
+];
+
+// Populate category filter
+const categorySelect = document.getElementById('categoryFilter');
+[...new Set(transactions.map(t=>t.category))].forEach(cat=>{
+  const opt = document.createElement('option'); opt.value=cat; opt.textContent=cat;
+  categorySelect.appendChild(opt);
+});
+
+// Render table
+function renderTable(filterCat='all', from=null, to=null){
+  const tbody = document.querySelector('#financeTable tbody');
+  tbody.innerHTML='';
+  let data = transactions;
+  if(filterCat!=='all') data = data.filter(t=>t.category===filterCat);
+  if(from) data = data.filter(t=>t.date>=from);
+  if(to) data = data.filter(t=>t.date<=to);
+  data.forEach(t=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${t.date}</td><td>${t.type}</td><td>${t.category}</td><td>₱${t.amount.toLocaleString()}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Update summary
+  const incomeTotal = data.filter(d=>d.type==='Income').reduce((a,b)=>a+b.amount,0);
+  const expenseTotal = data.filter(d=>d.type==='Expense').reduce((a,b)=>a+b.amount,0);
+  document.getElementById('totalIncome').textContent = incomeTotal.toLocaleString();
+  document.getElementById('totalExpenses').textContent = expenseTotal.toLocaleString();
+  document.getElementById('balance').textContent = (incomeTotal-expenseTotal).toLocaleString();
+  renderChart(data);
+}
+
+// Render Chart
+const ctx = document.getElementById('financeChart').getContext('2d');
+let financeChart;
+function renderChart(data){
+  const labels = [...new Set(data.map(d=>d.date))].sort();
+  const incomeData = labels.map(l=>data.filter(d=>d.date===l && d.type==='Income').reduce((a,b)=>a+b.amount,0));
+  const expenseData = labels.map(l=>data.filter(d=>d.date===l && d.type==='Expense').reduce((a,b)=>a+b.amount,0));
+  if(financeChart) financeChart.destroy();
+  financeChart = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Income', data:incomeData, backgroundColor:'rgba(46,204,113,0.7)', stack:'stack1'},
+        {label:'Expenses', data:expenseData, backgroundColor:'rgba(231,76,60,0.7)', stack:'stack1'}
+      ]
+    },
+    options:{ responsive:true, scales:{ x:{ stacked:true }, y:{ stacked:true, beginAtZero:true } } }
+  });
+}
+
+// Filter Events
+categorySelect.addEventListener('change', ()=>{ renderTable(categorySelect.value, fromDate.value, toDate.value); });
+const fromDate=document.getElementById('fromDate');
+const toDate=document.getElementById('toDate');
+fromDate.addEventListener('change', ()=>{ renderTable(categorySelect.value, fromDate.value, toDate.value); });
+toDate.addEventListener('change', ()=>{ renderTable(categorySelect.value, fromDate.value, toDate.value); });
+
+// Initial render
+renderTable();
+
+// Dark Mode & Mobile Menu
+const toggleBtn = document.getElementById("darkModeToggle");
+toggleBtn.addEventListener("click", ()=>{document.body.classList.toggle("dark-mode"); toggleBtn.textContent=document.body.classList.contains("dark-mode")?"☀️ Light Mode":"🌙 Dark Mode";});
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+menuToggle.addEventListener("click", ()=>{navLinks.classList.toggle("active");});
+</script>
+</body>
+</html>

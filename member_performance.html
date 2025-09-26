@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOD - Member Performance</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --red: #e74c3c;
+  --yellow: #f1c40f;
+  --dark-bg: #2c3e50;
+  --light-bg: #f4f4f4;
+  --text-dark: #333;
+  --text-light: #f4f4f4;
+}
+html, body {
+  margin:0; padding:0; height:100%; font-family:Arial, sans-serif;
+  background: var(--light-bg); color: var(--text-dark); display:flex; flex-direction:column; min-height:100vh;
+}
+body.dark-mode { background: var(--dark-bg); color: var(--text-light); }
+
+header { background: var(--red); color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:1000; }
+.logo-title { display:flex; align-items:center; gap:10px; }
+.logo-title img { height:60px; width:60px; border-radius:50%; }
+nav { display:flex; align-items:center; gap:15px; }
+nav a, nav button { color:white; text-decoration:none; font-weight:bold; background:none; border:none; cursor:pointer; }
+nav a:hover, nav button:hover { color: var(--yellow); }
+
+.menu-toggle { display:none; flex-direction:column; cursor:pointer; }
+.bar { height:3px; width:25px; background-color:white; margin:4px 0; border-radius:2px; }
+.nav-links { display:flex; gap:15px; }
+@media (max-width:768px) {
+  .nav-links { display:none; position:absolute; top:60px; right:20px; background: var(--red); flex-direction:column; width:200px; padding:15px; border-radius:10px; }
+  .nav-links.active { display:flex; }
+  .menu-toggle { display:flex; }
+}
+
+main { padding:20px; flex:1; }
+.welcome-panel { background: var(--yellow); color: var(--dark-bg); padding:15px; border-radius:10px; text-align:center; font-weight:bold; margin-bottom:20px; }
+.card { background:white; padding:20px; border-radius:10px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s; }
+body.dark-mode .card { background: #34495e; color: var(--text-light); }
+
+.table-container { max-height:300px; overflow-y:auto; margin-top:10px; }
+table { width:100%; border-collapse: collapse; }
+table th, table td { border:1px solid #ddd; padding:10px; text-align:center; }
+table th { background: var(--yellow); font-weight:bold; }
+body.dark-mode table th { background: #f39c12; }
+
+.btn { padding:5px 10px; border:none; border-radius:5px; cursor:pointer; color:white; font-weight:bold; margin:2px; }
+.btn-view { background:#3498db; }
+.btn-update { background:#2ecc71; }
+
+.back-btn { margin-top:20px; padding:10px 15px; background: var(--red); color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
+
+canvas { margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-title">
+    <img src="ymtp_logo.jpg" alt="YMTP Logo" class="logo">
+    <h3>YMTP Management System</h3>
+  </div>
+  <div class="menu-toggle" id="menuToggle"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+  <nav class="nav-links" id="navLinks">
+    <a href="bodmain.html">Home</a>
+    <a href="bodprof.html">Profile</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+    <button id="darkModeToggle">🌙 Dark Mode</button>
+    <a href="login.html">Logout</a>
+  </nav>
+</header>
+
+<main>
+<div class="welcome-panel">📊 Member Performance Dashboard</div>
+
+<!-- Select Member -->
+<div class="card">
+  <label for="memberSelect"><strong>Select Member:</strong></label>
+  <select id="memberSelect" onchange="updateChart()">
+  </select>
+</div>
+
+<!-- Chart -->
+<div class="card">
+  <canvas id="performanceChart"></canvas>
+</div>
+
+<!-- Table -->
+<div class="card">
+  <div class="table-container">
+    <table id="memberTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Department</th>
+          <th>Attendance (%)</th>
+          <th>Participation (1-5)</th>
+          <th>Tasks Completed</th>
+          <th>Overall Performance</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Juan Dela Cruz</td>
+          <td>Operations</td>
+          <td>95</td>
+          <td>5</td>
+          <td>10/12</td>
+          <td>Excellent</td>
+          <td>
+            <button class="btn btn-view" onclick="viewDetails(this)">View</button>
+            <button class="btn btn-update" onclick="updatePerformance(this)">Update</button>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Maria Santos</td>
+          <td>Finance</td>
+          <td>90</td>
+          <td>4</td>
+          <td>8/10</td>
+          <td>Good</td>
+          <td>
+            <button class="btn btn-view" onclick="viewDetails(this)">View</button>
+            <button class="btn btn-update" onclick="updatePerformance(this)">Update</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <button class="back-btn" onclick="window.location.href='bodmain.html'">⬅ Back</button>
+</div>
+</main>
+
+<footer>© 2025 YMTP Management System. All rights reserved.</footer>
+
+<script>
+// Dark Mode
+const toggleBtn = document.getElementById("darkModeToggle");
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+  toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+});
+
+// Mobile Menu
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+menuToggle.addEventListener("click", () => { navLinks.classList.toggle("active"); });
+
+// Table Actions
+function viewDetails(btn){
+  const row = btn.parentElement.parentElement;
+  alert(`Details for ${row.cells[1].innerText}:\nDepartment: ${row.cells[2].innerText}\nAttendance: ${row.cells[3].innerText}\nParticipation: ${row.cells[4].innerText}\nTasks Completed: ${row.cells[5].innerText}\nOverall Performance: ${row.cells[6].innerText}`);
+}
+function updatePerformance(btn){
+  const row = btn.parentElement.parentElement;
+  const newAttendance = prompt("Enter new Attendance %", row.cells[3].innerText);
+  const newParticipation = prompt("Enter Participation (1-5)", row.cells[4].innerText);
+  const newTasks = prompt("Enter Tasks Completed (e.g., 10/12)", row.cells[5].innerText);
+  const newOverall = prompt("Enter Overall Performance", row.cells[6].innerText);
+  if(newAttendance) row.cells[3].innerText = newAttendance;
+  if(newParticipation) row.cells[4].innerText = newParticipation;
+  if(newTasks) row.cells[5].innerText = newTasks;
+  if(newOverall) row.cells[6].innerText = newOverall;
+  populateSelect();
+  updateChart();
+}
+
+// Chart.js - Dynamic based on selection
+const memberTable = document.getElementById('memberTable');
+const memberSelect = document.getElementById('memberSelect');
+let performanceChart;
+
+function populateSelect(){
+  const rows = Array.from(memberTable.tBodies[0].rows);
+  memberSelect.innerHTML = "";
+  rows.forEach((row, idx) => {
+    const option = document.createElement("option");
+    option.value = idx;
+    option.text = row.cells[1].innerText;
+    memberSelect.add(option);
+  });
+}
+populateSelect();
+
+function updateChart(){
+  const selectedIndex = memberSelect.value;
+  const row = memberTable.tBodies[0].rows[selectedIndex];
+  const labels = ['Attendance', 'Participation', 'Tasks Completed'];
+  const tasks = row.cells[5].innerText.split('/');
+  const data = [
+    parseInt(row.cells[3].innerText),
+    parseInt(row.cells[4].innerText),
+    parseInt(tasks[0])
+  ];
+  if(performanceChart) performanceChart.destroy();
+  const ctx = document.getElementById('performanceChart').getContext('2d');
+  performanceChart = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels: labels,
+      datasets:[{
+        label: row.cells[1].innerText,
+        data: data,
+        backgroundColor:['#3498db','#f1c40f','#2ecc71']
+      }]
+    },
+    options:{
+      responsive:true,
+      scales:{ y:{ beginAtZero:true } }
+    }
+  });
+}
+updateChart();
+</script>
+</body>
+</html>

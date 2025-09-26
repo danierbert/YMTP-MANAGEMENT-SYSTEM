@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YMTP Officers Report</title>
+  <style>
+    :root {
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --dark-bg: #2c3e50;
+      --light-bg: #f4f4f4;
+      --text-dark: #333;
+      --text-light: #f4f4f4;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    header {
+      background: var(--red);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-title img {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    nav a, nav button {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav button:hover {
+      color: var(--yellow);
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .bar {
+      height: 3px;
+      width: 25px;
+      background-color: white;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: var(--red);
+        flex-direction: column;
+        width: 200px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .card {
+      background: #34495e;
+      color: var(--text-light);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .report-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .report-form input,
+    .report-form textarea,
+    .report-form select,
+    .report-form button {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .report-form textarea {
+      flex: 2;
+      resize: vertical;
+    }
+
+    .report-form button {
+      background: var(--red);
+      color: white;
+      border: none;
+      cursor: pointer;
+      flex: 0.5;
+    }
+
+    .report-form button:hover {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .filter-bar input, .filter-bar select {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    body.dark-mode th {
+      background: #f39c12;
+      color: black;
+    }
+
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .actions button, .back-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .actions button {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    .actions button:hover {
+      background: var(--red);
+      color: white;
+    }
+
+    .back-btn {
+      background: var(--red);
+      color: white;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: var(--yellow);
+      color: var(--dark-bg);
+    }
+
+    footer {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-title">
+      <img src="../pictures/ymtp_logo.jpg" alt="YMTP Logo">
+      <h3>YMTP Officers Report</h3>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="president.html">Home</a>
+      <button id="darkModeToggle">🌙 Dark Mode</button>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Add Report -->
+    <div class="card">
+      <h2>📝 Submit Report</h2>
+      <form id="reportForm" class="report-form">
+        <input type="text" id="officerName" placeholder="Officer Name" required>
+        <select id="position" required>
+          <option value="">Select Position</option>
+          <option value="President">President</option>
+          <option value="Vice President">Vice President</option>
+          <option value="Secretary">Secretary</option>
+          <option value="Treasurer">Treasurer</option>
+          <option value="Auditor">Auditor</option>
+          <option value="PRO">PRO</option>
+        </select>
+        <textarea id="reportText" placeholder="Enter report details..." rows="4" required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <!-- Report Records -->
+    <div class="card">
+      <h2>📑 Officers Reports</h2>
+
+      <!-- Search & Filter -->
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Search reports...">
+        <select id="filterPosition">
+          <option value="">All Positions</option>
+          <option value="President">President</option>
+          <option value="Vice President">Vice President</option>
+          <option value="Secretary">Secretary</option>
+          <option value="Treasurer">Treasurer</option>
+          <option value="Auditor">Auditor</option>
+          <option value="PRO">PRO</option>
+        </select>
+      </div>
+
+      <table id="reportTableFull">
+        <thead>
+          <tr>
+            <th>Officer Name</th>
+            <th>Position</th>
+            <th>Report</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="reportTable">
+          <!-- Reports will appear here -->
+        </tbody>
+      </table>
+
+      <!-- Export + Back -->
+      <div class="actions">
+        <button onclick="exportPDF()">⬇ Export as PDF</button>
+        <button onclick="exportExcel()">⬇ Export as Excel</button>
+        <a href="president.html" class="back-btn">⬅ Back to Dashboard</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 YMTP Management System. All rights reserved.
+  </footer>
+
+  <!-- jsPDF & SheetJS CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    // Dark Mode Toggle
+    const toggleBtn = document.getElementById("darkModeToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode") 
+        ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    // Mobile Menu
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+    // Officers Report Logic
+    const reportForm = document.getElementById("reportForm");
+    const reportTable = document.getElementById("reportTable");
+
+    reportForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const officerName = document.getElementById("officerName").value;
+      const position = document.getElementById("position").value;
+      const reportText = document.getElementById("reportText").value;
+      const date = new Date().toLocaleDateString();
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${officerName}</td>
+        <td>${position}</td>
+        <td>${reportText}</td>
+        <td>${date}</td>
+      `;
+      reportTable.appendChild(row);
+
+      reportForm.reset();
+    });
+
+    // Export PDF
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("YMTP Officers Reports", 14, 15);
+      doc.autoTable({ html: "#reportTableFull", startY: 20 });
+      doc.save("Officers_Reports.pdf");
+    }
+
+    // Export Excel
+    function exportExcel() {
+      let table = document.getElementById("reportTableFull");
+      let wb = XLSX.utils.table_to_book(table, { sheet: "Reports" });
+      XLSX.writeFile(wb, "Officers_Reports.xlsx");
+    }
+
+    // Search & Filter Logic
+    const searchInput = document.getElementById("searchInput");
+    const filterPosition = document.getElementById("filterPosition");
+
+    function filterTable() {
+      const searchValue = searchInput.value.toLowerCase();
+      const filterValue = filterPosition.value;
+
+      const rows = reportTable.getElementsByTagName("tr");
+      for (let i = 0; i < rows.length; i++) {
+        const name = rows[i].cells[0].textContent.toLowerCase();
+        const pos = rows[i].cells[1].textContent;
+        const report = rows[i].cells[2].textContent.toLowerCase();
+
+        let matchesSearch = name.includes(searchValue) || report.includes(searchValue);
+        let matchesFilter = filterValue === "" || pos === filterValue;
+
+        rows[i].style.display = (matchesSearch && matchesFilter) ? "" : "none";
+      }
+    }
+
+    searchInput.addEventListener("input", filterTable);
+    filterPosition.addEventListener("change", filterTable);
+  </script>
+</body>
+</html>

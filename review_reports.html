@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Reports - YMTP Management System</title>
+<style>
+:root {
+  --red: #e74c3c;
+  --yellow: #f1c40f;
+  --dark-bg: #2c3e50;
+  --light-bg: #f4f4f4;
+  --text-dark: #333;
+  --text-light: #f4f4f4;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--light-bg);
+  color: var(--text-dark);
+  transition: background 0.3s, color 0.3s;
+}
+body.dark-mode {
+  background: var(--dark-bg);
+  color: var(--text-light);
+}
+header {
+  background: var(--red);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-title img {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+}
+nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+nav a, nav button {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+nav a:hover, nav button:hover { color: var(--yellow); }
+.menu-toggle { display: none; flex-direction: column; cursor: pointer; }
+.bar { height: 3px; width: 25px; background-color: white; margin: 4px 0; border-radius: 2px; }
+.nav-links { display: flex; gap: 15px; }
+
+@media(max-width:768px){
+  .nav-links{display:none;position:absolute;top:60px;right:20px;background:var(--red);flex-direction:column;width:200px;padding:15px;border-radius:10px;}
+  .nav-links.active{display:flex;}
+  .menu-toggle{display:flex;}
+}
+
+main{padding:20px;}
+.welcome-panel{background:var(--yellow);color:var(--dark-bg);padding:15px;border-radius:10px;text-align:center;font-weight:bold;margin-bottom:20px;}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 5px rgba(0,0,0,0.1);transition: background 0.3s,color 0.3s;}
+body.dark-mode .card{background:#34495e;color:var(--text-light);}
+button.menu-item{background:var(--yellow);padding:10px 15px;border-radius:5px;font-weight:bold;margin:3px;cursor:pointer;transition:0.3s;}
+button.menu-item:hover{background:var(--red);color:white;}
+
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{border:1px solid #ddd;padding:8px;text-align:left;}
+th{cursor:pointer;background:var(--yellow);}
+tr.pending{background:#fff3cd;}
+
+.table-container{overflow-x:auto;}
+footer{background:var(--red);color:white;text-align:center;padding:10px;margin-top:20px;}
+.modal{
+  display:none;position:fixed;z-index:10000;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,0.5);
+}
+.modal-content{
+  background-color:white;margin:10% auto;padding:20px;border-radius:10px;width:90%;max-width:500px;position:relative;
+}
+.modal-content input, .modal-content select{width:100%;padding:8px;margin:5px 0 10px 0;border:1px solid #ccc;border-radius:5px;}
+.modal-content button{margin-top:10px;}
+.close{position:absolute;right:10px;top:10px;font-size:20px;font-weight:bold;cursor:pointer;}
+.back-btn{margin-top:10px;padding:10px 15px;background:var(--red);color:white;border:none;border-radius:5px;cursor:pointer;}
+.back-btn:hover{background:#c0392b;}
+</style>
+</head>
+<body>
+<header>
+<div class="logo-title">
+<img src="ymtp_logo.jpg" alt="YMTP Logo" class="logo">
+<h3>YMTP Management System</h3>
+</div>
+<div class="menu-toggle" id="menuToggle">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+<nav class="nav-links" id="navLinks">
+<a href="bodmain.html">Home</a>
+<a href="bodprof.html">Profile</a>
+<a href="#">About</a>
+<a href="#">Contact</a>
+<button id="darkModeToggle">🌙 Dark Mode</button>
+<a href="login.html">Logout</a>
+</nav>
+</header>
+
+<main>
+<div class="welcome-panel">📑 Review Reports - Board of Directors</div>
+
+<div class="card">
+<button class="menu-item" id="addReportBtn">➕ Add Report</button>
+<input type="text" id="searchInput" placeholder="Search report...">
+<div class="table-container">
+<table id="reportTable">
+<thead>
+<tr>
+<th onclick="sortTable(0)">ID</th>
+<th onclick="sortTable(1)">Title</th>
+<th onclick="sortTable(2)">Category</th>
+<th onclick="sortTable(3)">Date</th>
+<th onclick="sortTable(4)">Submitted By</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="pending">
+<td>1</td>
+<td>Monthly Budget</td>
+<td>Finance</td>
+<td>2025-09-01</td>
+<td>Maria</td>
+<td>Pending</td>
+<td>
+<button class="menu-item" onclick="approveReport(this)">✅ Approve</button>
+<button class="menu-item" onclick="rejectReport(this)">❌ Reject</button>
+<button class="menu-item" onclick="editReport(this)">✏️ Edit</button>
+<button class="menu-item" onclick="removeReport(this)">🗑️ Remove</button>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Community Event</td>
+<td>Events</td>
+<td>2025-09-05</td>
+<td>Juan</td>
+<td>Approved</td>
+<td>
+<button class="menu-item" onclick="approveReport(this)">✅ Approve</button>
+<button class="menu-item" onclick="rejectReport(this)">❌ Reject</button>
+<button class="menu-item" onclick="editReport(this)">✏️ Edit</button>
+<button class="menu-item" onclick="removeReport(this)">🗑️ Remove</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<button class="back-btn" onclick="window.history.back()">⬅️ Back</button>
+</div>
+
+<!-- Modal -->
+<div id="reportModal" class="modal">
+<div class="modal-content">
+<span class="close" id="closeModal">&times;</span>
+<h3 id="modalTitle">Add Report</h3>
+<input type="text" id="reportTitle" placeholder="Title">
+<input type="text" id="reportCategory" placeholder="Category">
+<input type="date" id="reportDate">
+<input type="text" id="reportSubmitted" placeholder="Submitted By">
+<select id="reportStatus">
+<option value="Pending">Pending</option>
+<option value="Approved">Approved</option>
+<option value="Rejected">Rejected</option>
+</select>
+<button id="saveReportBtn">Save</button>
+</div>
+</div>
+
+<footer>© 2025 YMTP Management System. All rights reserved.</footer>
+
+<script>
+// Dark Mode
+const toggleBtn = document.getElementById("darkModeToggle");
+toggleBtn.addEventListener("click",()=>{document.body.classList.toggle("dark-mode");toggleBtn.textContent=document.body.classList.contains("dark-mode")?"☀️ Light Mode":"🌙 Dark Mode";});
+
+// Mobile Menu
+const menuToggle=document.getElementById("menuToggle");
+const navLinks=document.getElementById("navLinks");
+menuToggle.addEventListener("click",()=>{navLinks.classList.toggle("active");});
+
+// Search
+document.getElementById("searchInput").addEventListener("keyup",function(){
+  let filter=this.value.toUpperCase();
+  let table=document.getElementById("reportTable");
+  let trs=table.getElementsByTagName("tr");
+  for(let i=1;i<trs.length;i++){
+    let tds=trs[i].getElementsByTagName("td");
+    let txtValue="";
+    for(let j=0;j<5;j++){txtValue+=tds[j].textContent||tds[j].innerText;}
+    trs[i].style.display=txtValue.toUpperCase().indexOf(filter)>-1?"":"none";
+  }
+});
+
+// Sort
+function sortTable(n){
+  let table=document.getElementById("reportTable");
+  let rows=Array.from(table.rows).slice(1);
+  let asc=true;
+  if(table.getAttribute("data-sort")===n){asc=table.getAttribute("data-order")!=="asc"?true:false;}
+  rows.sort((a,b)=>{
+    let x=a.cells[n].innerText.toLowerCase();
+    let y=b.cells[n].innerText.toLowerCase();
+    if(x<y)return asc?-1:1;
+    if(x>y)return asc?1:-1;
+    return 0;
+  });
+  rows.forEach(r=>table.tBodies[0].appendChild(r));
+  table.setAttribute("data-sort",n);
+  table.setAttribute("data-order",asc?"asc":"desc");
+}
+
+// Modal
+const modal=document.getElementById("reportModal");
+const addBtn=document.getElementById("addReportBtn");
+const closeModal=document.getElementById("closeModal");
+const saveBtn=document.getElementById("saveReportBtn");
+let editRow=null;
+
+addBtn.onclick=function(){
+  modal.style.display="block";
+  document.getElementById("modalTitle").innerText="Add Report";
+  document.getElementById("reportTitle").value="";
+  document.getElementById("reportCategory").value="";
+  document.getElementById("reportDate").value="";
+  document.getElementById("reportSubmitted").value="";
+  document.getElementById("reportStatus").value="Pending";
+  editRow=null;
+}
+closeModal.onclick=function(){modal.style.display="none";}
+window.onclick=function(e){if(e.target===modal) modal.style.display="none";}
+
+// Save
+saveBtn.onclick=function(){
+  let title=document.getElementById("reportTitle").value;
+  let category=document.getElementById("reportCategory").value;
+  let date=document.getElementById("reportDate").value;
+  let submitted=document.getElementById("reportSubmitted").value;
+  let status=document.getElementById("reportStatus").value;
+  if(title===""||category===""||date===""||submitted===""){alert("Please fill all fields"); return;}
+  if(editRow){
+    editRow.cells[1].innerText=title;
+    editRow.cells[2].innerText=category;
+    editRow.cells[3].innerText=date;
+    editRow.cells[4].innerText=submitted;
+    editRow.cells[5].innerText=status;
+    editRow.className=status==="Pending"?"pending":"";
+  }else{
+    let table=document.getElementById("reportTable").tBodies[0];
+    let row=table.insertRow();
+    row.className=status==="Pending"?"pending":"";
+    row.insertCell(0).innerText=table.rows.length;
+    row.insertCell(1).innerText=title;
+    row.insertCell(2).innerText=category;
+    row.insertCell(3).innerText=date;
+    row.insertCell(4).innerText=submitted;
+    row.insertCell(5).innerText=status;
+    let actions=row.insertCell(6);
+    actions.innerHTML=`<button class="menu-item" onclick="approveReport(this)">✅ Approve</button>
+    <button class="menu-item" onclick="rejectReport(this)">❌ Reject</button>
+    <button class="menu-item" onclick="editReport(this)">✏️ Edit</button>
+    <button class="menu-item" onclick="removeReport(this)">🗑️ Remove</button>`;
+  }
+  modal.style.display="none";
+}
+
+// Edit
+function editReport(btn){
+  editRow=btn.parentElement.parentElement;
+  modal.style.display="block";
+  document.getElementById("modalTitle").innerText="Edit Report";
+  document.getElementById("reportTitle").value=editRow.cells[1].innerText;
+  document.getElementById("reportCategory").value=editRow.cells[2].innerText;
+  document.getElementById("reportDate").value=editRow.cells[3].innerText;
+  document.getElementById("reportSubmitted").value=editRow.cells[4].innerText;
+  document.getElementById("reportStatus").value=editRow.cells[5].innerText;
+}
+
+// Remove
+function removeReport(btn){
+  if(confirm("Are you sure you want to remove this report?")){
+    btn.parentElement.parentElement.remove();
+  }
+}
+
+// Approve / Reject
+function approveReport(btn){btn.parentElement.parentElement.cells[5].innerText="Approved";btn.parentElement.parentElement.className="";}
+function rejectReport(btn){btn.parentElement.parentElement.cells[5].innerText="Rejected";btn.parentElement.parentElement.className="";}
+
+</script>
+</body>
+</html>

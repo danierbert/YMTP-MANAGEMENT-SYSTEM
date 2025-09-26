@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Reports - YMTP Management System</title>
+  <style>
+    :root {
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --dark-bg: #2c3e50;
+      --light-bg: #f4f4f4;
+      --text-dark: #333;
+      --text-light: #f4f4f4;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    header {
+      background: var(--red);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-title img {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    nav a, nav button {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    nav a:hover, nav button:hover { color: var(--yellow); }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .bar {
+      height: 3px;
+      width: 25px;
+      background-color: white;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: var(--red);
+        flex-direction: column;
+        width: 200px;
+        padding: 15px;
+        border-radius: 10px;
+      }
+      .nav-links.active { display: flex; }
+      .menu-toggle { display: flex; }
+    }
+
+    main { padding: 20px; }
+    .welcome-panel {
+      background: var(--yellow);
+      color: var(--dark-bg);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode .card { background: #34495e; color: var(--text-light); }
+
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th { background: var(--yellow); color: var(--dark-bg); }
+    body.dark-mode th { background: #f39c12; color: var(--text-light); }
+    td { background: white; }
+    body.dark-mode td { background: #34495e; color: var(--text-light); }
+
+    .budget-summary {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .summary-item {
+      flex: 1;
+      background: var(--yellow);
+      color: var(--dark-bg);
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      min-width: 100px;
+    }
+
+    #balance { font-size: 1.2em; }
+
+    .back-btn {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--red);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .back-btn:hover { background: var(--yellow); color: var(--dark-bg); }
+
+    footer {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    input[type="text"], select {
+      padding: 5px 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    body.dark-mode input, body.dark-mode select { background: #34495e; color: var(--text-light); border: 1px solid #666; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-title">
+      <img src="ymtp_logo.jpg" alt="YMTP Logo">
+      <h3>YMTP Management System</h3>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="auditmain.html">Home</a>
+      <a href="auditprof.html">Profile</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <button id="darkModeToggle">🌙 Dark Mode</button>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="welcome-panel">
+      👋 Welcome, Auditor! Review all financial transactions here.
+    </div>
+
+    <div class="card">
+      <h2>📑 Audit Reports</h2>
+
+      <label for="filterType">Filter by Type:</label>
+      <select id="filterType" onchange="filterTable()">
+        <option value="All">All</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+
+      <div class="table-container">
+        <table id="auditTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Verified</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2025-09-01</td>
+              <td>Membership Fees</td>
+              <td>Income</td>
+              <td>₱5000</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>2025-09-03</td>
+              <td>Office Supplies</td>
+              <td>Expense</td>
+              <td>₱1500</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>2025-09-10</td>
+              <td>Fundraising</td>
+              <td>Income</td>
+              <td>₱8000</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>2025-09-12</td>
+              <td>Event Catering</td>
+              <td>Expense</td>
+              <td>₱3000</td>
+              <td>No</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="budget-summary">
+        <div class="summary-item">
+          <h3>Total Income</h3>
+          <p id="total-income">₱0</p>
+        </div>
+        <div class="summary-item">
+          <h3>Total Expenses</h3>
+          <p id="total-expenses">₱0</p>
+        </div>
+        <div class="summary-item">
+          <h3>Balance</h3>
+          <p id="balance">₱0</p>
+        </div>
+      </div>
+
+      <a href="audit.html" class="back-btn">⬅ Back to Dashboard</a>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 YMTP Management System. All rights reserved.
+  </footer>
+
+  <script>
+    // Dark Mode
+    const toggleBtn = document.getElementById("darkModeToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    // Mobile Menu
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    menuToggle.addEventListener("click", () => navLinks.classList.toggle("active"));
+
+    // Filter Table
+    const table = document.getElementById("auditTable");
+    const filterSelect = document.getElementById("filterType");
+
+    function filterTable() {
+      const filter = filterSelect.value;
+      let totalIncome = 0;
+      let totalExpenses = 0;
+
+      for (let i = 1; i < table.rows.length; i++) {
+        const row = table.rows[i];
+        const type = row.cells[2].innerText;
+        const amount = parseFloat(row.cells[3].innerText.replace(/[^0-9.-]+/g,""));
+
+        row.style.display = (filter === "All" || filter === type) ? "" : "none";
+
+        if (row.style.display !== "none") {
+          if (type === "Income") totalIncome += amount;
+          else if (type === "Expense") totalExpenses += amount;
+        }
+      }
+
+      document.getElementById("total-income").innerText = `₱${totalIncome.toLocaleString()}`;
+      document.getElementById("total-expenses").innerText = `₱${totalExpenses.toLocaleString()}`;
+      const balance = totalIncome - totalExpenses;
+      const balanceElem = document.getElementById("balance");
+      balanceElem.innerText = `₱${balance.toLocaleString()}`;
+      balanceElem.style.color = balance >= 0 ? "green" : "red";
+    }
+
+    filterTable(); // Initial calculation
+  </script>
+</body>
+</html>

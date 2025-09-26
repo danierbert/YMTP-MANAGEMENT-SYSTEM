@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Records - Secretary</title>
+<style>
+:root {
+  --red: #e74c3c;
+  --yellow: #f1c40f;
+  --dark-bg: #2c3e50;
+  --light-bg: #f4f4f4;
+  --text-dark: #333;
+  --text-light: #f4f4f4;
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--light-bg);
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+body.dark-mode { background: var(--dark-bg); color: var(--text-light); }
+
+header { background: var(--red); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+.logo-title { display: flex; align-items: center; gap: 10px; }
+.logo-title img { height: 60px; width: 60px; border-radius: 50%; }
+nav { display: flex; align-items: center; gap: 15px; }
+nav a, nav button { color: white; text-decoration: none; font-weight: bold; background: none; border: none; cursor: pointer; }
+nav a:hover, nav button:hover { color: var(--yellow); }
+.menu-toggle { display: none; flex-direction: column; cursor: pointer; }
+.bar { height: 3px; width: 25px; background-color: white; margin: 4px 0; border-radius: 2px; }
+.nav-links { display: flex; gap: 15px; }
+@media (max-width: 768px) {
+  .nav-links { display: none; position: absolute; top: 60px; right: 20px; background: var(--red); flex-direction: column; width: 200px; padding: 15px; border-radius: 10px; }
+  .nav-links.active { display: flex; }
+  .menu-toggle { display: flex; }
+}
+main { padding: 20px; flex: 1; }
+
+.welcome-panel {
+  background: var(--yellow);
+  color: var(--dark-bg);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background 0.3s, color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+body.dark-mode .card { background: #34495e; color: var(--text-light); }
+
+#searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 10px;
+  max-height: 400px;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+.records-table th, .records-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.records-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--yellow);
+  z-index: 2;
+  cursor: pointer;
+}
+body.dark-mode .records-table th { background: #f1c40f; color: var(--dark-bg); }
+body.dark-mode .records-table td { color: var(--text-light); }
+
+.records-table tbody tr:nth-child(even) { background: #f9f9f9; }
+body.dark-mode .records-table tbody tr:nth-child(even) { background: #3b4a5a; }
+.records-table tbody tr:nth-child(odd) { background: #fff; }
+body.dark-mode .records-table tbody tr:nth-child(odd) { background: #34495e; }
+
+.active-status { color: green; font-weight: bold; }
+.inactive-status { color: red; font-weight: bold; }
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.button-group a, .button-group button {
+  display: inline-block;
+  background: var(--red);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.button-group a:hover, .button-group button:hover { background: var(--yellow); color: var(--dark-bg); }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 15px;
+}
+.pagination button {
+  padding: 5px 10px;
+  border: 1px solid var(--red);
+  background: white;
+  color: var(--red);
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.pagination button.active { background: var(--red); color: white; }
+.pagination button:hover { background: var(--yellow); color: var(--dark-bg); }
+
+@media (max-width: 500px) {
+  .records-table th, .records-table td { font-size: 12px; padding: 8px; }
+}
+
+footer {
+  background: var(--red);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  margin-top: auto;
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-title">
+    <img src="ymtp_logo.jpg" alt="YMTP Logo">
+    <h3>Member Records - Secretary</h3>
+  </div>
+  <div class="menu-toggle" id="menuToggle">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+  <nav class="nav-links" id="navLinks">
+    <a href="secmain.html">Home</a>
+    <a href="secprof.html">Profile</a>
+    <button id="darkModeToggle">🌙 Dark Mode</button>
+    <a href="login.html">Logout</a>
+  </nav>
+</header>
+
+<main>
+  <div class="welcome-panel">
+    👥 View and manage YMTP members here.
+  </div>
+
+  <div class="card">
+    <h2>Member Records</h2>
+    <input type="text" id="searchInput" placeholder="Search members by name...">
+    <div class="table-container">
+      <table class="records-table" id="memberTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)">ID</th>
+            <th onclick="sortTable(1)">Full Name</th>
+            <th onclick="sortTable(2)">Position</th>
+            <th>Contact</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sample Rows -->
+          <tr><td>001</td><td>Juan Dela Cruz</td><td>Member</td><td>09123456789</td><td class="active-status">Active</td></tr>
+          <tr><td>002</td><td>Maria Santos</td><td>Member</td><td>09234567890</td><td class="active-status">Active</td></tr>
+          <tr><td>003</td><td>Carlos Reyes</td><td>Officer</td><td>09345678901</td><td class="inactive-status">Inactive</td></tr>
+          <tr><td>004</td><td>Anna Lim</td><td>Member</td><td>09456789012</td><td class="active-status">Active</td></tr>
+          <tr><td>005</td><td>Pedro Cruz</td><td>Member</td><td>09567890123</td><td class="active-status">Active</td></tr>
+          <tr><td>006</td><td>Liza Ramos</td><td>Officer</td><td>09678901234</td><td class="inactive-status">Inactive</td></tr>
+          <tr><td>007</td><td>Mark Tan</td><td>Member</td><td>09789012345</td><td class="active-status">Active</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+
+    <div class="button-group">
+      <a href="secmain.html">⬅️ Back</a>
+      <button onclick="window.print()">🖨️ Print</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2025 YMTP Management System. All rights reserved.
+</footer>
+
+<script>
+  // Dark Mode
+  const toggleBtn = document.getElementById("darkModeToggle");
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+  });
+
+  // Mobile Menu
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
+  menuToggle.addEventListener("click", () => { navLinks.classList.toggle("active"); });
+
+  // Search Filter
+  const searchInput = document.getElementById('searchInput');
+  const table = document.getElementById('memberTable');
+  const tbody = table.querySelector('tbody');
+  searchInput.addEventListener('keyup', function() {
+    const filter = this.value.toUpperCase();
+    Array.from(tbody.rows).forEach(row => {
+      const name = row.cells[1].textContent.toUpperCase();
+      row.style.display = name.indexOf(filter) > -1 ? '' : 'none';
+    });
+    setupPagination();
+  });
+
+  // Sort Table
+  function sortTable(n) {
+    let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    switching = true;
+    dir = "asc";
+    while (switching) {
+      switching = false;
+      rows = Array.from(tbody.rows);
+      for (i = 0; i < rows.length - 1; i++) {
+        shouldSwitch = false;
+        x = rows[i].getElementsByTagName("TD")[n];
+        y = rows[i + 1].getElementsByTagName("TD")[n];
+        if (dir === "asc") {
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+        } else if (dir === "desc") {
+          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+        }
+      }
+      if (shouldSwitch) { tbody.insertBefore(rows[i + 1], rows[i]); switching = true; switchcount++; }
+      else { if (switchcount === 0 && dir === "asc") { dir = "desc"; switching = true; } }
+    }
+    setupPagination();
+  }
+
+  // Pagination
+  let current_page = 1;
+  const rows_per_page = 5;
+  const paginationContainer = document.getElementById('pagination');
+
+  function setupPagination() {
+    const rows = Array.from(tbody.rows).filter(row => row.style.display !== "none");
+    const page_count = Math.ceil(rows.length / rows_per_page);
+    paginationContainer.innerHTML = '';
+    for (let i = 1; i <= page_count; i++) {
+      const btn = document.createElement('button');
+      btn.innerText = i;
+      if (i === current_page) btn.classList.add('active');
+      btn.addEventListener('click', () => { current_page = i; displayPage(rows); });
+      paginationContainer.appendChild(btn);
+    }
+    displayPage(rows);
+  }
+
+  function displayPage(rows) {
+    rows.forEach((row, index) => {
+      row.style.display = ((index >= (current_page-1) * rows_per_page) && (index < current_page * rows_per_page)) ? '' : 'none';
+    });
+    Array.from(paginationContainer.children).forEach((btn, i) => btn.classList.toggle('active', i === current_page-1));
+  }
+
+  // Initial Setup
+  setupPagination();
+</script>
+</body>
+</html>
